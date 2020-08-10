@@ -46,7 +46,7 @@
                                 </div>
                                 <div>
                                     <button type="submit" class="submit-btn">Submit</button>
-                                    <p class="action-left">3 try left</p>
+                                    <p class="action-left"><span id="retry">3</span> try left</p>
                                 </div>
                             </div>
                         </div>
@@ -59,30 +59,65 @@
             </div>
             <script>
                 // notification
-                document.getElementsByClassName('notify-section')[0].style.display = 'none';
+                function notificationReset() {
+                    document.querySelectorAll('.notify-section .notify')[0].style.display = 'none';
+                    document.querySelectorAll('.notify-section .notify')[1].style.display = 'none';
+                }
+                notificationReset();
 
-                // generate pin
+                // generate pin numbers
+                let generatePin = document.getElementsByClassName('form-control')[0];
                 document.getElementsByClassName('generate-btn')[0].addEventListener('click', function() {
-                    const generatePin = Math.floor(Math.random() * 10000);
-                    console.log(generatePin)
-                    if (generatePin < 1000 || generatePin > 9999) {
-                        return;
-                    } else {
-                        document.getElementsByClassName('form-control')[0].value = generatePin;
+                    const generatePinNum = Math.floor(Math.random() * 10000);
+                    if (generatePinNum > 1000 && generatePinNum < 9999) {
+                        generatePin.value = generatePinNum;
                     }
-                    console.log(generatePin)
+                    notificationReset();
                 })
 
-                // input number
+                // input pin numbers
                 let inputDisplay = [];
+                const inputPin = document.getElementsByClassName('form-control')[1];
                 const numBtn = document.getElementsByClassName('button');
                 for (let i = 0; i < numBtn.length; i++) {
                     const element = numBtn[i];
                     element.addEventListener('click', function() {
                         inputDisplay.push(element.innerText);
-                        document.getElementsByClassName('form-control')[1].value = inputDisplay.join('');
+                        if (inputDisplay.length > 4) {
+                            inputDisplay.length = 4;
+                        }
+                        // num buttons
+                        inputPin.value = inputDisplay.join('');
+                        // clear button
+                        numBtn[11].addEventListener('click', function() {
+                                inputDisplay = [];
+                                inputPin.value = '';
+                            })
+                            // erase button
+                        numBtn[9].addEventListener('click', function() {
+                            inputDisplay.pop();
+                            inputPin.value = inputDisplay.join('');
+                        })
                     })
                 }
+
+                // match pin numbers
+                document.getElementsByClassName('submit-btn')[0].addEventListener('click', function() {
+                    if (generatePin.value == inputPin.value && generatePin.value != '') {
+                        document.querySelectorAll('.notify-section .notify')[1].style.display = 'block';
+                        setTimeout(notificationReset, 2000);
+                    } else {
+                        document.querySelectorAll('.notify-section .notify')[0].style.display = 'block';
+                        const retryLeft = document.getElementById('retry');
+                        const retryCount = parseInt(retryLeft.innerText) - 1;
+                        retryLeft.innerText = retryCount;
+                        if (retryCount <= 0) {
+                            alert("You've reached the limit. Please try again later.");
+                            retryLeft.innerText = 3;
+                        }
+                        setTimeout(notificationReset, 2000);
+                    }
+                })
             </script>
 </body>
 
