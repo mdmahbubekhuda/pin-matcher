@@ -111,9 +111,8 @@
                         const retryLeft = document.getElementById('retry');
                         const retryCount = parseInt(retryLeft.innerText) - 1;
                         retryLeft.innerText = retryCount;
-                        if (retryCount < 0) {
-                            alert("You've reached the limit. Please try again later.");
-                            retryLeft.innerText = 3;
+                        if (retryCount <= 0) {
+                            document.getElementsByClassName('submit-btn')[0].disabled = true;
                         }
                         setTimeout(notificationReset, 1000);
                     }
